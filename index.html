@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recipe Finder</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    img { width: 200px; border-radius: 8px; margin-top: 10px; }
+    input { padding: 8px; width: 200px; }
+    button { padding: 8px 12px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Recipe Finder</h1>
+  <input type="text" id="search" placeholder="Enter meal name">
+  <button onclick="findRecipe()">Search</button>
+  <button onclick="randomRecipe()">Random</button>
+  <div id="result"></div>
+  <script>
+    async function findRecipe() {
+      let name = document.getElementById('search').value;
+      if (!name) return alert("Please enter a meal name");
+      let res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${name}`);
+      let data = await res.json();
+      display(data.meals ? data.meals[0] : null);
+    }
+    async function randomRecipe() {
+      let res = await fetch(`https://www.themealdb.com/api/json/v1/1/random.php`);
+      let data = await res.json();
+      display(data.meals[0]);
+    }
+    function display(meal) {
+      if (!meal) {
+        document.getElementById('result').innerHTML = `<p>No recipe found.</p>`;
+        return;
+      }
+      document.getElementById('result').innerHTML = `
+        <h2>${meal.strMeal}</h2>
+        <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+        <p><strong>Category:</strong> ${meal.strCategory}</p>
+        <p><strong>Instructions:</strong> ${meal.strInstructions.slice(0,200)}...</p>
+        <a href="${meal.strYoutube}" target="_blank">Watch on YouTube</a>
+      `;
+    }
+  </script>
+</body>
+</html>
